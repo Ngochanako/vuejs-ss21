@@ -50,7 +50,7 @@
         <td>
             <v-row>
                 <v-col cols="3">
-                    <v-btn color="primary" @click="updateProduct(item.id)">Sửa</v-btn>
+                    <v-btn color="primary" @click="updateProduct(item)">Sửa</v-btn>
                 </v-col>
                 <v-col cols="3">
                     <v-btn color="error" @click="deleteProduct(item.id)">Xóa</v-btn>
@@ -72,6 +72,7 @@ const product=reactive({
   price:0,
   quantity:0,
 })
+const typeSubmit=ref('add');
 const modalAdd=ref(false);
 const list=reactive([]);
 const getAllProduct=async()=>{
@@ -113,24 +114,62 @@ const handleModalAdd=()=>{
 const closeAddModal=()=>{
   modalAdd.value=false;
 }
-const add=async()=>{
-  product.id=new Date().getTime();
+const createProduct=async(product)=>{
     try {
         const res=await fetch('http://localhost:3000/products',{
             method:'POST',
-            headers:{
-                'Content-Type':'application/json',
+            headers: {
+                'Content-Type': 'application/json',
             },
-            body:JSON.stringify(product),
+            body: JSON.stringify(product),
         });
         const data=await res.json();
-        console.log('Thêm sản phẩm thành công');
-        list.push(data);
-        modalAdd.value=false;
+       list.push(data);
+        
     } catch (error) {
         console.log(error);
         
     }
+}
+const add=()=>{
+  if(typeSubmit=='add'){
+    product.id=new Date().getTime();
+    createProduct(product);
+    modalAdd.value=false;
+  }else{
+    updateProductById(product);
+    list[list.findIndex(item=>item.id===product.id)]=product;
+    modalAdd.value=false;
+    typeSubmit.value='add';
+  }   
+}
+//update Product
+const updateProductById=async(product)=>{
+    try {
+        const res=await fetch(`http://localhost:3000/products/${product.id}`,{
+            method:'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(product),
+        });
+        const data=await res.json();
+        console.log('Cập nhật sản phẩm thành công');
+        
+        console.log(data);
+        
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+const updateProduct=(item)=>{
+   typeSubmit.value='update';
+   product.id=item.id;
+   product.name=item.name;
+   product.price=item.price;
+   product.quantity=item.quantity;
+   modalAdd.value=true;
 }
 </script>
 
