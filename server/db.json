@@ -29,6 +29,12 @@
       "name": "Product 5 Updated",
       "price": 15000,
       "quantity": 2
+    },
+    {
+      "id": 1728521229137,
+      "name": "Product x",
+      "price": "100000",
+      "quantity": "1"
     }
   ]
 }
